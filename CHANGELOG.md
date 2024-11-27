@@ -65,3 +65,6 @@ update/ allow change image to widget
 ## 1.0.0
 TODO
 - add slider_captcha_client to verify with server
+
+## 1.0.1
+- Upgrade android example to android
