@@ -1,5 +1,4 @@
 import 'package:example/slider_captcha_client_verify.dart';
-import 'package:example/slider_captcha_server_verify.dart';
 import 'package:flutter/material.dart';
 
 void main() {
