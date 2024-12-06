@@ -32,7 +32,7 @@ class SliderCaptchaClientProvider {
   final String pieceBase64;
 
   ///Y coordinate of the puzzle piece.
-  final double coordinatesY;
+  double coordinatesY;
 
   /// Provides Image information from the original base64 data
   SliderCaptchaClientProvider({
@@ -45,21 +45,17 @@ class SliderCaptchaClientProvider {
   }
 
   ///This is the required function to be executed to initialize the values.
-  Future<bool> init(BuildContext context) async {
+  Future<bool> init(double maxWidth) async {
     puzzleSize = await _getSize(puzzleUnit8List);
     pieceSize = await _getSize(pieceUnit8List);
-    // mobile screen width is below 800
-    if (MediaQuery.of(context).size.width < 800) {
-      ratio = _getRatio(context);
-    } else {
-      ratio = 1.0;
-    }
+    ratio = puzzleSize.width / maxWidth;
 
-    puzzleImage = Image.memory(puzzleUnit8List);
+    puzzleImage = Image.memory(puzzleUnit8List, scale: ratio,);
     pieceImage = Image.memory(
       pieceUnit8List,
       scale: ratio,
     );
+    coordinatesY = coordinatesY / ratio;
     return true;
   }
 
@@ -69,11 +65,4 @@ class SliderCaptchaClientProvider {
     return Size(image.width.toDouble(), image.height.toDouble());
   }
 
-  /// Calculator ratio of image-screen
-  /// The corner image will be automatically scaled according to the size of the mobile screen.
-  /// The purpose of this is to scale the puzzle piece to the exact ratio that the corner image has been scaled
-  double _getRatio(BuildContext context) {
-    double sizeScreen = MediaQuery.of(context).size.width;
-    return puzzleSize.width / sizeScreen;
-  }
 }

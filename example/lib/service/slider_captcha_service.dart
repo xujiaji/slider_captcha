@@ -8,25 +8,28 @@ import '../model/captcha_model.dart';
 class Solution {
   String? id;
   int? x;
+  int? endTime;
 
-  Solution({this.id, this.x});
+  Solution({this.id, this.x, this.endTime});
 
   Solution.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     x = json['x'];
+    endTime = json['endTime'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
     data['x'] = x;
+    data['endTime'] = endTime;
     return data;
   }
 }
 
 class SliderCaptchaService {
   Future<CaptchaModel?> getCaptcha() async {
-    const url = 'http://localhost:18080/puzzle';
+    const url = 'http://192.168.11.146:8080/getSliderCaptcha?width=720&height=214';
     final uri = Uri.parse(url);
     final response = await http.get(uri);
     if (response.statusCode == 200) {
@@ -38,7 +41,7 @@ class SliderCaptchaService {
   }
 
   Future<R<String>> postAnswer(Solution solution) async {
-    final url = Uri.https('http://localhost:18080/puzzle/solution');
+    final url = Uri.parse('http://192.168.11.146:8080/verifyCode');
     final response = await http.post(
       url,
       body: jsonEncode(solution.toJson()),

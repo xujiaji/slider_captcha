@@ -39,21 +39,24 @@ class _SliderCaptchaClientState extends State<SliderCaptchaClient>
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: widget.provider.init(context),
-      key: Key('FutureBuilder'),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return _SliderCaptchaComponent(
-            widget.provider,
-            titleSlider,
-            titleStyle,
-            widget.onConfirm,
+    return LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          return FutureBuilder(
+            future: widget.provider.init(constraints.maxWidth),
+            key: Key('FutureBuilder'),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return _SliderCaptchaComponent(
+                  widget.provider,
+                  titleSlider,
+                  titleStyle,
+                  widget.onConfirm,
+                );
+              }
+              return SizedBox();
+            },
           );
-        }
-        return SizedBox();
-      },
-    );
+        });
   }
 }
 
@@ -117,12 +120,17 @@ class _SliderCaptchaComponentState extends State<_SliderCaptchaComponent>
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _SliderCaptchaRenderObject(
-          widget.provider.puzzleImage!,
-          widget.provider.pieceImage!,
-          widget.provider.coordinatesY,
-          offset,
+        Container(
+          child:
+            _SliderCaptchaRenderObject(
+              widget.provider.puzzleImage!,
+              widget.provider.pieceImage!,
+              widget.provider.coordinatesY,
+              offset,
+            )
         ),
         sliderBar(),
       ],
@@ -133,16 +141,7 @@ class _SliderCaptchaComponentState extends State<_SliderCaptchaComponent>
   Widget sliderBar() => Container(
         height: 50,
         width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: const <BoxShadow>[
-            BoxShadow(
-              offset: Offset(0, 0),
-              blurRadius: 2,
-              color: Colors.grey,
-            )
-          ],
-        ),
+        color: Colors.grey,
         child: Stack(
           children: <Widget>[
             Center(
@@ -219,8 +218,8 @@ class _SliderCaptchaComponentState extends State<_SliderCaptchaComponent>
   }
 
   void checkAnswer() async {
-    var imageSize = widget.provider.puzzleSize.width / widget.provider.ratio;
-    await widget.onConfirm.call(offset / imageSize);
+    // var imageSize = widget.provider.puzzleSize.width / widget.provider.ratio;
+    await widget.onConfirm.call(offset * widget.provider.ratio);
     animationController.forward();
     // if (isLock) return;
     // isLock = true;
@@ -237,20 +236,20 @@ class _SliderCaptchaComponentState extends State<_SliderCaptchaComponent>
 class _SliderCaptchaRenderObject extends MultiChildRenderObjectWidget {
   final Image image;
   final Image piece;
-  final double percent;
+  final double coordinatesY;
   final double offsetMove;
 
   _SliderCaptchaRenderObject(
     this.image,
     this.piece,
-    this.percent,
+    this.coordinatesY,
     this.offsetMove, {
     Key? key,
   }) : super(children: [image, piece], key: key);
 
   @override
   RenderObject createRenderObject(BuildContext context) {
-    var renderObject = _RenderTestSliderCaptChar(percent, offsetMove);
+    var renderObject = _RenderTestSliderCaptChar(coordinatesY, offsetMove);
     renderObject.offsetMove = offsetMove;
     return renderObject;
   }
@@ -268,11 +267,11 @@ class _RenderTestSliderCaptChar extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, SliderCaptchaParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, SliderCaptchaParentData> {
-  final double percent;
+  final double coordinatesY;
 
   double offsetMove = 0;
 
-  _RenderTestSliderCaptChar(this.percent, this.offsetMove);
+  _RenderTestSliderCaptChar(this.coordinatesY, this.offsetMove);
 
   @override
   void paint(PaintingContext context, Offset offset) {
@@ -285,7 +284,7 @@ class _RenderTestSliderCaptChar extends RenderBox
     context.paintChild(
       piece,
       Offset(offset.dx + offsetMove,
-          offset.dy + (firstChild?.size.height ?? 0) * percent),
+          offset.dy + coordinatesY),
     );
   }
 
@@ -297,7 +296,7 @@ class _RenderTestSliderCaptChar extends RenderBox
     for (var child = firstChild; child != null; child = childAfter(child)) {
       child.layout(deflatedConstraints, parentUsesSize: true);
     }
-    size = Size(firstChild?.size.height ?? 0, firstChild?.size.width ?? 0);
+    size = Size(firstChild?.size.width ?? 0, firstChild?.size.height ?? 0);
   }
 
   @override
