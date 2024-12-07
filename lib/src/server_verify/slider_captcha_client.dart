@@ -42,7 +42,8 @@ class _SliderCaptchaClientState extends State<SliderCaptchaClient>
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           return FutureBuilder(
-            future: widget.provider.init(constraints.maxWidth),
+            future: widget.provider.init(constraints.maxWidth > constraints.maxHeight ?
+            constraints.maxHeight : constraints.maxWidth),
             key: Key('FutureBuilder'),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
