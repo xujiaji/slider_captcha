@@ -29,7 +29,7 @@ class Solution {
 
 class SliderCaptchaService {
   Future<CaptchaModel?> getCaptcha() async {
-    const url = 'http://192.168.11.146:8080/getSliderCaptcha?width=720&height=214';
+    const url = 'http://192.168.11.159:8080/getSliderCaptcha?width=720&height=214';
     final uri = Uri.parse(url);
     final response = await http.get(uri);
     if (response.statusCode == 200) {
@@ -41,7 +41,7 @@ class SliderCaptchaService {
   }
 
   Future<R<String>> postAnswer(Solution solution) async {
-    final url = Uri.parse('http://192.168.11.146:8080/verifyCode');
+    final url = Uri.parse('http://192.168.11.159:8080/verifyCode');
     final response = await http.post(
       url,
       body: jsonEncode(solution.toJson()),

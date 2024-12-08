@@ -39,26 +39,26 @@ class _SliderCaptchaClientState extends State<SliderCaptchaClient>
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          return FutureBuilder(
-            future: widget.provider.init(constraints.maxWidth > constraints.maxHeight ?
-            constraints.maxHeight : constraints.maxWidth),
-            key: Key('FutureBuilder'),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                return _SliderCaptchaComponent(
-                  widget.provider,
-                  titleSlider,
-                  titleStyle,
-                  widget.onConfirm,
-                );
-              }
-              return SizedBox();
-            },
+    return FutureBuilder(
+      future: widget.provider.init(280),
+      key: Key('FutureBuilder'),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          return Container(
+            width: 280,
+            child: _SliderCaptchaComponent(
+              widget.provider,
+              titleSlider,
+              titleStyle,
+              widget.onConfirm,
+            ),
           );
-        });
+        }
+        return SizedBox();
+      },
+    );
   }
+
 }
 
 class _SliderCaptchaComponent extends StatefulWidget {
@@ -124,14 +124,11 @@ class _SliderCaptchaComponentState extends State<_SliderCaptchaComponent>
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(
-          child:
-            _SliderCaptchaRenderObject(
-              widget.provider.puzzleImage!,
-              widget.provider.pieceImage!,
-              widget.provider.coordinatesY,
-              offset,
-            )
+        _SliderCaptchaRenderObject(
+          widget.provider.puzzleImage!,
+          widget.provider.pieceImage!,
+          widget.provider.coordinatesY,
+          offset,
         ),
         sliderBar(),
       ],
@@ -141,7 +138,6 @@ class _SliderCaptchaComponentState extends State<_SliderCaptchaComponent>
   /// You can customize the sliderBar here
   Widget sliderBar() => Container(
         height: 50,
-        width: double.infinity,
         color: Colors.grey,
         child: Stack(
           children: <Widget>[
